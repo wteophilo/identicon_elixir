@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    name: "lint"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26.2.5'
+          elixir-version: '1.17.3'
+      - run: mix deps.get
+      - run: mix credo
+
+  test:
+    runs-on: ubuntu-24.04
+    name: "tests"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26.2.5'
+          elixir-version: '1.17.3'
+      - run: mix deps.get
+      - run: mix test
+      - run: mix test --cover --export-coverage default
+      - run: mix test.coverage
