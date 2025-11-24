@@ -6,6 +6,7 @@ defmodule Identicon.MixProject do
       app: :identicon,
       version: "0.1.0",
       elixir: "~> 1.17",
+      test_coverage: [summary: [threshold: 45]],
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
