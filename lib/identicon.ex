@@ -14,11 +14,13 @@ defmodule Identicon do
   ## Examples
 
       iex> Identicon.hash_input("elixir")
-      [116, 181, 101, 134, 90, 25, 44, 200, 105, 60, 83, 13, 72, 235, 56, 58]
+      %Identicon.Image{hex: [116, 181, 101, 134, 90, 25, 44, 200, 105, 60, 83, 13, 72, 235, 56, 58]}
 
   """
   def hash_input(input) do
-    :crypto.hash(:md5, input)
+    hex = :crypto.hash(:md5, input)
     |> :binary.bin_to_list
+
+    %Identicon.Image {hex: hex}
   end
 end
