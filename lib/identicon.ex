@@ -1,18 +1,24 @@
 defmodule Identicon do
   @moduledoc """
-  Documentation for `Identicon`.
+    Provides methods for creating a Identicon
   """
 
+  def main (input) do
+    input
+    |> hash_input
+  end
+
   @doc """
-  Hello world.
+  Generates an MD5 hash for the given input and converts it into a list of bytes.
 
   ## Examples
 
-      iex> Identicon.hello()
-      :world
+      iex> Identicon.hash_input("elixir")
+      [116, 181, 101, 134, 90, 25, 44, 200, 105, 60, 83, 13, 72, 235, 56, 58]
 
   """
-  def hello do
-    :world
+  def hash_input(input) do
+    :crypto.hash(:md5, input)
+    |> :binary.bin_to_list
   end
 end
