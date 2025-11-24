@@ -3,5 +3,5 @@ defmodule Identicon.Image do
     Provides data struct for Images
   """
 
-  defstruct hex: nil
+  defstruct hex: nil, color: nil
 end
