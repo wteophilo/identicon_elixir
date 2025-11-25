@@ -42,12 +42,31 @@ defmodule Identicon do
     %Identicon.Image{hex_list | color: {r, g , b}}
   end
 
-  def build_grid(%Identicon.Image{hex: hex} = _image) do
-    hex
-    |> Enum.chunk_every(3, 3, :discard)
-    |> Enum.map(&mirror_row/1)
+  @doc """
+    Generate a grid based on a image
+
+    ## Examples
+      iex> input = %Identicon.Image{hex: [116, 181, 101, 134, 90, 25, 44, 200 , 105], color: {116, 181, 101}, grid: nil}
+      iex> Identicon.build_grid(input)
+      %Identicon.Image{ hex: [116, 181, 101, 134, 90, 25, 44, 200 , 105], color: {116, 181, 101}, grid: [{116, 0}, {181, 1}, {101, 2}, {181, 3}, {116, 4}, {134, 5}, {90, 6}, {25, 7}, {90, 8}, {134, 9}, {44, 10}, {200, 11}, {105, 12}, {200, 13}, {44, 14}]}
+  """
+  def build_grid(%Identicon.Image{hex: hex} = image) do
+    grid =
+      hex
+        |> Enum.chunk_every(3, 3, :discard)
+        |> Enum.map(&mirror_row/1)
+        |> List.flatten
+        |> Enum.with_index
+    %Identicon.Image{image | grid: grid}
   end
 
+  @doc """
+    Based on a list mirror the two initial values
+
+    ## Examples
+      iex>Identicon.mirror_row([116, 181, 101])
+      [116, 181, 101, 181, 116]
+  """
   def mirror_row(row) do
     [first, second | _tail] = row
 
