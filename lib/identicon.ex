@@ -3,10 +3,11 @@ defmodule Identicon do
     Provides methods for creating a Identicon
   """
 
-  def main (input) do
+  def main(input) do
     input
     |> hash_input
     |> pick_color
+    |> build_grid
   end
 
   @doc """
@@ -39,5 +40,17 @@ defmodule Identicon do
   """
   def pick_color(%Identicon.Image {hex:   [r, g, b | _tail]} = hex_list) do
     %Identicon.Image{hex_list | color: {r, g , b}}
+  end
+
+  def build_grid(%Identicon.Image{hex: hex} = _image) do
+    hex
+    |> Enum.chunk_every(3, 3, :discard)
+    |> Enum.map(&mirror_row/1)
+  end
+
+  def mirror_row(row) do
+    [first, second | _tail] = row
+
+    row ++ [second, first]
   end
 end
