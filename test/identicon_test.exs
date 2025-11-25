@@ -51,18 +51,22 @@ defmodule IdenticonTest do
   end
 
   describe "build_grid/1" do
-    test "should return a new list chunked and mirrored" do
+    test "should fill grid data chunked and mirrored" do
       input = %Identicon.Image{
-        hex: [116, 181, 101, 134, 90, 25, 44, 200 , 100],
-        color: {116, 181, 101}
+        hex: [116, 181, 101, 134, 90, 25, 44, 200 , 105],
+        color: {116, 181, 101},
+        grid: nil
       }
 
       expected_output = %Identicon.Image{
-        hex: [[116, 181, 101, 181, 116], [134, 90, 25, 90, 134], [44, 200, 100, 200, 44]],
-        color: {116, 181, 101}
+        hex: [116, 181, 101, 134, 90, 25, 44, 200 , 105],
+        color: {116, 181, 101},
+        grid: [{116, 0}, {181, 1}, {101, 2}, {181, 3}, {116, 4}, {134, 5}, {90, 6}, {25, 7}, {90, 8}, {134, 9}, {44, 10}, {200, 11}, {105, 12}, {200, 13}, {44, 14}]
       }
 
-      assert Identicon.build_grid(input) == expected_output.hex
+      identicon = Identicon.build_grid(input)
+
+      assert identicon.grid == expected_output.grid
     end
   end
 end
