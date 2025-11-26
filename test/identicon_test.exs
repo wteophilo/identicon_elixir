@@ -69,4 +69,21 @@ defmodule IdenticonTest do
       assert identicon.grid == expected_output.grid
     end
   end
+
+  describe "filter_odd_squares/1" do
+    test "filters tuples whose first element is odd" do
+      input_grid = [{100, 0}, {101, 1}, {102, 2}, {103, 3}]
+
+      input_image = %Identicon.Image{
+        hex: [],
+        color: {0, 0, 0},
+        grid: input_grid
+      }
+      expected_grid = [{100, 0}, {102, 2}]
+
+      expected_image = %Identicon.Image{input_image | grid: expected_grid}
+
+      assert Identicon.filter_odd_squares(input_image) == expected_image
+    end
+  end
 end
