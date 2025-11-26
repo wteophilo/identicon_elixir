@@ -74,6 +74,15 @@ defmodule Identicon do
     row ++ [second, first]
   end
 
+  @doc """
+   Filter only odds values from a tupple
+
+   ## Examples
+    iex> grid = %Identicon.Image{grid: [{100, 0}, {101, 1}, {102, 2}, {103, 3}]}
+    iex> Identicon.filter_odd_squares(grid)
+    %Identicon.Image{grid: [{100, 0}, {102, 2}]}
+
+  """
   def filter_odd_squares(%Identicon.Image{grid: grid} = image) do
     grid = Enum.filter grid, fn({code, _index}) ->
       rem(code, 2) == 0
