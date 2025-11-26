@@ -9,6 +9,7 @@ defmodule Identicon do
     |> pick_color
     |> build_grid
     |> filter_odd_squares
+    |> build_pixel_map
   end
 
   @doc """
@@ -74,11 +75,34 @@ defmodule Identicon do
     row ++ [second, first]
   end
 
+  @doc """
+   Filter only odds values from a tupple
+
+   ## Examples
+    iex> grid = %Identicon.Image{grid: [{100, 0}, {101, 1}, {102, 2}, {103, 3}]}
+    iex> Identicon.filter_odd_squares(grid)
+    %Identicon.Image{grid: [{100, 0}, {102, 2}]}
+
+  """
   def filter_odd_squares(%Identicon.Image{grid: grid} = image) do
     grid = Enum.filter grid, fn({code, _index}) ->
       rem(code, 2) == 0
     end
 
     %Identicon.Image{image | grid: grid}
+  end
+
+  def build_pixel_map(%Identicon.Image{grid: grid} = image) do
+    pixel_map = Enum.map grid, fn({_code, index}) ->
+      horizontal = rem(index, 5) * 50
+      vertical = div(index, 5) * 50
+
+      top_left = {horizontal, vertical}
+      bottom_right = {horizontal + 50, vertical + 50}
+
+      {top_left, bottom_right}
+    end
+
+    %Identicon.Image{image | pixel_map: pixel_map }
   end
 end
