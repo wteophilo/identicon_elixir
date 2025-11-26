@@ -86,4 +86,18 @@ defmodule IdenticonTest do
       assert Identicon.filter_odd_squares(input_image) == expected_image
     end
   end
+
+  describe "build_pixel_map/1" do
+    test "validates the mapping of grid elements to a 5x5 pixel coordinate system" do
+      input_grid = [{100, 0}, {101, 1}, {102, 2}, {103, 3}]
+      input_image = %Identicon.Image{
+        grid: input_grid
+      }
+
+      expected_pixel_map = [{{0, 0}, {50, 50}}, {{50, 0}, {100, 50}}, {{100, 0}, {150, 50}}, {{150, 0}, {200, 50}}]
+      expected_image = %Identicon.Image{input_image | pixel_map: expected_pixel_map}
+
+      assert Identicon.build_pixel_map(input_image) == expected_image
+    end
+  end
 end
