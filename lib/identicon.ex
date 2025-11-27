@@ -10,6 +10,8 @@ defmodule Identicon do
     |> build_grid
     |> filter_odd_squares
     |> build_pixel_map
+    |> draw_image
+    |> save_image(input)
   end
 
   @doc """
@@ -92,6 +94,21 @@ defmodule Identicon do
     %Identicon.Image{image | grid: grid}
   end
 
+  @doc """
+    Maps a numerical index to a set of pixel coordinates within a 5x5 grid
+    of 50x50 pixel blocks (a 250x250 canvas).
+
+    This function converts the sequential index of a block into the
+    top-left and bottom-right coordinate pair required for drawing the
+    50x50 square.
+
+    ## Parameters
+      * `index` (`integer()`): The sequential index of the block (0 to 24).
+
+    ## Returns
+      * `{{start_x, start_y}, {stop_x, stop_y}}`: A tuple containing the
+        top-left and bottom-right coordinates of the 50x50 block.
+  """
   def build_pixel_map(%Identicon.Image{grid: grid} = image) do
     pixel_map = Enum.map grid, fn({_code, index}) ->
       horizontal = rem(index, 5) * 50
@@ -104,5 +121,49 @@ defmodule Identicon do
     end
 
     %Identicon.Image{image | pixel_map: pixel_map }
+  end
+
+  @doc """
+    Draws the Identicon image based on the provided `pixel_map` and renders it as PNG data.
+
+    The function uses the Erlang `:egd` library to create a 250x250 canvas.
+    It fills the rectangles defined in the `pixel_map` with the specified color.
+
+    ## Parameters
+      * `%Identicon.Image{color: {r, g, b}, pixel_map: pixel_map}`: An image struct
+        containing the color (RGB) and a pixel map (a list of tuples in the
+        format `{{start_x, start_y}, {stop_x, stop_y}}`).
+
+    ## Returns
+      * `binary()`: The raw PNG image binary data rendered by `:egd`.
+  """
+  def draw_image(%Identicon.Image{color: {r, g, b}, pixel_map: pixel_map}) do
+    image_size = 250
+
+    # Create a new image using Erlang's :egd if available; use apply/3 to avoid compile-time checks
+    img = apply(:egd, :create, [image_size, image_size])
+    fill = apply(:egd, :color, [{r, g, b}])
+
+    Enum.each(pixel_map, fn {{start_x, start_y}, {stop_x, stop_y}} ->
+      # :egd.filledRectangle expects inclusive coordinates, so subtract 1 from stop
+      apply(:egd, :filledRectangle, [img, {start_x, start_y}, {stop_x - 1, stop_y - 1}, fill])
+    end)
+
+    apply(:egd, :render, [img])
+  end
+  @doc """
+    Saves the rendered image binary data to a PNG file on the filesystem.
+
+    The filename is generated from the provided `input` string by appending the `.png` extension.
+
+    ## Parameters
+      * `image` (`binary()`): The binary data of the image (typically the output from `draw_image/1`).
+      * `input` (`String.t()`): The base string to be used as the filename.
+
+    ## Returns
+      * `:ok` | `{:error, reason}`: The result of the file write operation.
+  """
+  def save_image(image, input) do
+    File.write("#{input}.png", image)
   end
 end

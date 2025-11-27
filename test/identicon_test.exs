@@ -100,4 +100,46 @@ defmodule IdenticonTest do
       assert Identicon.build_pixel_map(input_image) == expected_image
     end
   end
+
+  describe "draw_image/1" do
+    test "returns a binary (EGD image data)" do
+      test_image_struct = %Identicon.Image{
+        color: {100, 150, 200},
+        pixel_map: [
+          {{0, 0}, {50, 50}},
+          {{100, 100}, {150, 150}}
+        ]
+      }
+
+      image_data = Identicon.draw_image(test_image_struct)
+
+      assert is_binary(image_data)
+
+      assert byte_size(image_data) > 100
+    end
+  end
+
+  describe "save_image/2" do
+    test "creates a file with the correct content and name" do
+      mock_image_data = "THIS IS MOCK PNG DATA"
+      filename_base = "test_identicon_output"
+      expected_filename = "#{filename_base}.png"
+
+      File.rm(expected_filename)
+
+      Identicon.save_image(mock_image_data, filename_base)
+
+      assert File.exists?(expected_filename)
+      assert File.read!(expected_filename) == mock_image_data
+
+      File.rm(expected_filename)
+    end
+
+    setup do
+      on_exit fn ->
+        File.rm("test_identicon_output.png")
+      end
+      :ok
+    end
+  end
 end
