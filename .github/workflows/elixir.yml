@@ -14,7 +14,7 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: '26.2.5'
-          elixir-version: '1.17.3'
+          elixir-version: '1.19.3'
       - run: mix deps.get
       - run: mix credo
 
@@ -26,7 +26,7 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: '26.2.5'
-          elixir-version: '1.17.3'
+          elixir-version: '1.19.3'
       - run: mix deps.get
       - run: mix test
       - run: mix test --cover --export-coverage default
